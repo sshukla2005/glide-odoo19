@@ -1,0 +1,20 @@
+{
+    'name': 'NT Purchase',
+    'version': '19.0.1.2.0',
+    'category': 'Inventory/Purchase',
+    'summary': 'NorthStar purchase customisations: incentives (with Excel import) and truck details',
+    'author': 'NorthStar Technologies International Ltd.',
+    'depends': ['purchase_stock', 'nt_stock'],
+    'data': [
+        'security/ir.model.access.csv',
+        'security/security.xml',
+        'data/ir_sequence_data.xml',
+        'wizard/incentive_order_wizard_views.xml',
+        'wizard/incentive_import_wizard_views.xml',
+        'views/incentive_order_views.xml',
+        'views/purchase_order_views.xml',
+    ],
+    'installable': True,
+    'application': False,
+    'license': 'LGPL-3',
+}

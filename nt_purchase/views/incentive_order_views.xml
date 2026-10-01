@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="incentive_order_view_list" model="ir.ui.view">
+        <field name="name">incentive.order.list</field>
+        <field name="model">incentive.order</field>
+        <field name="arch" type="xml">
+            <list string="Incentives" create="0">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="purchase_order_id"/>
+                <field name="partner_id"/>
+                <field name="user_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="amount" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="incentive_order_view_form" model="ir.ui.view">
+        <field name="name">incentive.order.form</field>
+        <field name="model">incentive.order</field>
+        <field name="arch" type="xml">
+            <form string="Incentive" create="0">
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="purchase_order_id"/>
+                            <field name="partner_id"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="amount"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="user_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Notes..."/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="incentive_order_view_search" model="ir.ui.view">
+        <field name="name">incentive.order.search</field>
+        <field name="model">incentive.order</field>
+        <field name="arch" type="xml">
+            <search string="Incentives">
+                <field name="name"/>
+                <field name="purchase_order_id"/>
+                <field name="partner_id"/>
+                <group>
+                    <filter name="group_partner" string="Vendor" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_purchase_order" string="Purchase Order" context="{'group_by': 'purchase_order_id'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_incentive_order" model="ir.actions.act_window">
+        <field name="name">Incentives</field>
+        <field name="res_model">incentive.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="incentive_order_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No incentives yet</p>
+            <p>Open a confirmed purchase order and click "Create Incentive".</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_incentive_order"
+              name="Incentives"
+              action="action_incentive_order"
+              parent="purchase.menu_procurement_management"
+              groups="purchase.group_purchase_user"
+              sequence="20"/>
+</odoo>

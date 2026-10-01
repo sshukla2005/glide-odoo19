@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="incentive_import_wizard_view_form" model="ir.ui.view">
+        <field name="name">incentive.import.wizard.form</field>
+        <field name="model">incentive.import.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Import Incentives">
+                <group>
+                    <field name="file_data" filename="file_name" widget="binary"/>
+                    <field name="file_name" invisible="1"/>
+                    <field name="default_date"/>
+                </group>
+                <div class="text-muted">
+                    <p>The first sheet needs a header row with these columns:</p>
+                    <ul>
+                        <li><b>PO Reference</b> - the purchase order name, for example P00012 (required)</li>
+                        <li><b>Incentive Amount</b> - a number greater than zero (required)</li>
+                        <li><b>Date</b> - optional, the default date above is used when empty</li>
+                        <li><b>Notes</b> - optional</li>
+                    </ul>
+                    <p>If any row has a problem, nothing is imported and the faulty rows are listed.</p>
+                </div>
+                <footer>
+                    <button name="action_import" type="object"
+                            string="Import" class="btn-primary" data-hotkey="q"/>
+                    <button string="Cancel" special="cancel" class="btn-secondary" data-hotkey="x"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_incentive_import_wizard" model="ir.actions.act_window">
+        <field name="name">Import Incentives</field>
+        <field name="res_model">incentive.import.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <menuitem id="menu_incentive_import"
+              name="Import Incentives"
+              action="action_incentive_import_wizard"
+              parent="purchase.menu_procurement_management"
+              groups="purchase.group_purchase_user"
+              sequence="21"/>
+</odoo>

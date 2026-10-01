@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="purchase_order_form_nt_incentive" model="ir.ui.view">
+        <field name="name">purchase.order.form.nt.incentive</field>
+        <field name="model">purchase.order</field>
+        <field name="inherit_id" ref="purchase.purchase_order_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//header" position="inside">
+                <button name="action_open_incentive_wizard" type="object"
+                        string="Create Incentive"
+                        invisible="state != 'purchase'"/>
+            </xpath>
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_incentive_orders" type="object"
+                        class="oe_stat_button" icon="fa-gift"
+                        invisible="incentive_count == 0">
+                    <field name="incentive_count" widget="statinfo" string="Incentives"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='products']" position="after">
+                <page string="Truck Details" name="nt_truck_details">
+                    <field name="truck_locked" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="vehicle_id"
+                                   domain="[('company_id', 'in', [company_id, False])]"
+                                   options="{'no_create': True}"
+                                   readonly="truck_locked"/>
+                            <field name="license_plate" readonly="truck_locked"/>
+                        </group>
+                        <group>
+                            <field name="driver_id" readonly="truck_locked"/>
+                            <field name="driver_phone" widget="phone"/>
+                        </group>
+                    </group>
+                    <div class="text-muted" invisible="not truck_locked">
+                        Truck details are locked because a receipt for this order is done.
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
