@@ -16,7 +16,10 @@ class SaleOrderLine(models.Model):
         return super(SaleOrderLine, self - fixed_lines)._compute_price_unit()
 
     def _compute_tax_ids(self):
-        # The fixed discount is never taxed.
+        # The discount lines carry the taxes of the order lines they discount
+        # (set by sale.order._nt_apply_fixed_discount), not the taxes of the
+        # discount product.
         fixed_lines = self.filtered('is_fixed_discount')
-        fixed_lines.tax_ids = False
+        for line in fixed_lines:
+            line.tax_ids = line.tax_ids
         return super(SaleOrderLine, self - fixed_lines)._compute_tax_ids()
