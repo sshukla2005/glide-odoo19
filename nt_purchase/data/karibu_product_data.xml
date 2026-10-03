@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <!-- Tanga Cement product codes, taken from the Products sheet of the
+         Karibu template (GPAL_IR_-_12292.xlsx). -->
+    <record id="karibu_product_bag325n" model="nt.karibu.product">
+        <field name="sequence">10</field>
+        <field name="code">BAG325N</field>
+        <field name="description">CEMENT;32.5N;50KG-BAGS;(SIMBA BARABARA)</field>
+        <field name="short_type">32.5N;50KG</field>
+    </record>
+    <record id="karibu_product_bag325r" model="nt.karibu.product">
+        <field name="sequence">20</field>
+        <field name="code">BAG325R</field>
+        <field name="description">CEMENT;32.5R;50KG-BAGS;(SIMBA IMARA)</field>
+        <field name="short_type">32.5R;50KG</field>
+    </record>
+    <record id="karibu_product_bag425n" model="nt.karibu.product">
+        <field name="sequence">30</field>
+        <field name="code">BAG425N</field>
+        <field name="description">CEMENT;42.5N;50KG-BAGS; (SIMBA BORA)</field>
+        <field name="short_type">42.5N;50KG</field>
+    </record>
+    <record id="karibu_product_bagex" model="nt.karibu.product">
+        <field name="sequence">40</field>
+        <field name="code">BAGEX</field>
+        <field name="description">CEM II/B-L 32.5R Bagged Twiga Cement Extra</field>
+        <field name="short_type">32.5R;50KG</field>
+    </record>
+    <record id="karibu_product_bagplusm" model="nt.karibu.product">
+        <field name="sequence">50</field>
+        <field name="code">BAGPLUSM</field>
+        <field name="description">CEM II/B-M 42.5N Bagged Twiga Cement Plus+</field>
+        <field name="short_type">42.5N;50KG</field>
+    </record>
+    <record id="karibu_product_big425n" model="nt.karibu.product">
+        <field name="sequence">60</field>
+        <field name="code">BIG425N</field>
+        <field name="description">CEMENT;42.5N; 1.5T BAG (SIMBA BORA)</field>
+        <field name="short_type">42.5N;1.5TBAG</field>
+    </record>
+    <record id="karibu_product_bul325r" model="nt.karibu.product">
+        <field name="sequence">70</field>
+        <field name="code">BUL325R</field>
+        <field name="description">CEMENT;32.5R;BULK (SIMBA IMARA)</field>
+        <field name="short_type">32.5R;BULK</field>
+    </record>
+    <record id="karibu_product_bul425n" model="nt.karibu.product">
+        <field name="sequence">80</field>
+        <field name="code">BUL425N</field>
+        <field name="description">CEMENT;42.5N;BULK (SIMBA BORA)</field>
+        <field name="short_type">42.5N;BULK</field>
+    </record>
+    <record id="karibu_product_bagplusr" model="nt.karibu.product">
+        <field name="sequence">90</field>
+        <field name="code">BAGPLUSR</field>
+        <field name="description">CEMENT;42.5R;50KG-BAGS; (TWIGA PLUS +RAPID)</field>
+        <field name="short_type">42.5R;50KG</field>
+    </record>
+    <record id="karibu_product_bag425r" model="nt.karibu.product">
+        <field name="sequence">100</field>
+        <field name="code">BAG425R</field>
+        <field name="description">CEMENT;42.5R;50KG-BAGS; (SIMBA HARAKA)</field>
+        <field name="short_type">42.5R;50KG</field>
+    </record>
+    <record id="karibu_product_big425r" model="nt.karibu.product">
+        <field name="sequence">110</field>
+        <field name="code">BIG425R</field>
+        <field name="description">CEMENT;42.5R; 1.5T BAG (SIMBA HARAKA)</field>
+        <field name="short_type">42.5R;1.5TBAG</field>
+    </record>
+    <record id="karibu_product_bul425r" model="nt.karibu.product">
+        <field name="sequence">120</field>
+        <field name="code">BUL425R</field>
+        <field name="description">CEMENT;42.5R;BULK (SIMBA HARAKA)</field>
+        <field name="short_type">42.5R;BULK</field>
+    </record>
+
+    <!-- Iringa branch, from the LOCATION / CUSTOMER cells of the template. -->
+    <record id="karibu_location_iringa" model="nt.karibu.location">
+        <field name="name">IRINGA</field>
+        <field name="code">IR</field>
+        <field name="customer_code">C60010467</field>
+        <field name="signatory_name">SUNIL KUMAR</field>
+    </record>
+</odoo>

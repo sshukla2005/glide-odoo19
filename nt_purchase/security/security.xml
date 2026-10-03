@@ -5,4 +5,16 @@
         <field name="model_id" ref="model_incentive_order"/>
         <field name="domain_force">[('company_id', 'in', company_ids)]</field>
     </record>
+    <record id="karibu_export_company_rule" model="ir.rule">
+        <field name="name">Karibu Export: multi-company</field>
+        <field name="model_id" ref="model_nt_karibu_export"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
+    <record id="karibu_location_company_rule" model="ir.rule">
+        <field name="name">Karibu Location: multi-company</field>
+        <field name="model_id" ref="model_nt_karibu_location"/>
+        <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+    </record>
+
 </odoo>
