@@ -3,3 +3,11 @@ access_incentive_order_user,incentive.order.user,model_incentive_order,purchase.
 access_incentive_order_manager,incentive.order.manager,model_incentive_order,purchase.group_purchase_manager,1,1,1,1
 access_incentive_order_wizard_user,incentive.order.wizard.user,model_incentive_order_wizard,purchase.group_purchase_user,1,1,1,1
 access_incentive_import_wizard_user,incentive.import.wizard.user,model_incentive_import_wizard,purchase.group_purchase_user,1,1,1,1
+access_karibu_product_user,nt.karibu.product.user,model_nt_karibu_product,purchase.group_purchase_user,1,0,0,0
+access_karibu_product_manager,nt.karibu.product.manager,model_nt_karibu_product,purchase.group_purchase_manager,1,1,1,1
+access_karibu_location_user,nt.karibu.location.user,model_nt_karibu_location,purchase.group_purchase_user,1,0,0,0
+access_karibu_location_manager,nt.karibu.location.manager,model_nt_karibu_location,purchase.group_purchase_manager,1,1,1,1
+access_karibu_truck_line_user,nt.karibu.truck.line.user,model_nt_karibu_truck_line,purchase.group_purchase_user,1,1,1,1
+access_karibu_export_user,nt.karibu.export.user,model_nt_karibu_export,purchase.group_purchase_user,1,1,1,0
+access_karibu_export_manager,nt.karibu.export.manager,model_nt_karibu_export,purchase.group_purchase_manager,1,1,1,1
+access_karibu_product_stock_user,nt.karibu.product.stock.user,model_nt_karibu_product,stock.group_stock_user,1,0,0,0

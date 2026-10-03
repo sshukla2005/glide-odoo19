@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ============ Cement codes ============ -->
+    <record id="karibu_product_view_list" model="ir.ui.view">
+        <field name="name">nt.karibu.product.list</field>
+        <field name="model">nt.karibu.product</field>
+        <field name="arch" type="xml">
+            <list string="Karibu Cement Codes" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="description"/>
+                <field name="short_type"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="karibu_product_view_search" model="ir.ui.view">
+        <field name="name">nt.karibu.product.search</field>
+        <field name="model">nt.karibu.product</field>
+        <field name="arch" type="xml">
+            <search string="Karibu Cement Codes">
+                <field name="code"/>
+                <field name="description"/>
+                <filter name="inactive" string="Archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_karibu_product" model="ir.actions.act_window">
+        <field name="name">Karibu Cement Codes</field>
+        <field name="res_model">nt.karibu.product</field>
+        <field name="view_mode">list</field>
+        <field name="search_view_id" ref="karibu_product_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add Tanga Cement's product codes</p>
+            <p>These fill the Products sheet and the dropdown of the exported LPO.</p>
+        </field>
+    </record>
+
+    <!-- ============ Locations ============ -->
+    <record id="karibu_location_view_list" model="ir.ui.view">
+        <field name="name">nt.karibu.location.list</field>
+        <field name="model">nt.karibu.location</field>
+        <field name="arch" type="xml">
+            <list string="Karibu Locations" editable="bottom">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="customer_code"/>
+                <field name="signatory_name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="active" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="action_karibu_location" model="ir.actions.act_window">
+        <field name="name">Karibu Locations</field>
+        <field name="res_model">nt.karibu.location</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Add a branch</p>
+            <p>Each branch has its own Tanga Cement customer code, printed on the LPO.</p>
+        </field>
+    </record>
+
+    <!-- ============ Export history ============ -->
+    <record id="karibu_export_view_list" model="ir.ui.view">
+        <field name="name">nt.karibu.export.list</field>
+        <field name="model">nt.karibu.export</field>
+        <field name="arch" type="xml">
+            <list string="Karibu Exports" create="0">
+                <field name="export_date"/>
+                <field name="name"/>
+                <field name="order_id"/>
+                <field name="partner_id" optional="show"/>
+                <field name="location_id" optional="show"/>
+                <field name="truck_count"/>
+                <field name="total_tons" sum="Total MT"/>
+                <field name="user_id" optional="hide"/>
+                <field name="file_name" optional="hide"/>
+                <button name="action_download" type="object" string="Download"
+                        icon="fa-download" title="Download this export again"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="karibu_export_view_form" model="ir.ui.view">
+        <field name="name">nt.karibu.export.form</field>
+        <field name="model">nt.karibu.export</field>
+        <field name="arch" type="xml">
+            <form string="Karibu Export" create="0">
+                <header>
+                    <button name="action_download" type="object" string="Download"
+                            class="btn-primary" icon="fa-download"/>
+                </header>
+                <sheet>
+                    <div class="oe_title"><h1><field name="name"/></h1></div>
+                    <group>
+                        <group>
+                            <field name="order_id"/>
+                            <field name="partner_id"/>
+                            <field name="location_id"/>
+                            <field name="file_name"/>
+                        </group>
+                        <group>
+                            <field name="export_date"/>
+                            <field name="user_id"/>
+                            <field name="truck_count"/>
+                            <field name="total_tons"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Notes..."/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="karibu_export_view_search" model="ir.ui.view">
+        <field name="name">nt.karibu.export.search</field>
+        <field name="model">nt.karibu.export</field>
+        <field name="arch" type="xml">
+            <search string="Karibu Exports">
+                <field name="name"/>
+                <field name="order_id"/>
+                <field name="partner_id"/>
+                <group>
+                    <filter name="group_location" string="Location"
+                            context="{'group_by': 'location_id'}"/>
+                    <filter name="group_user" string="Exported By"
+                            context="{'group_by': 'user_id'}"/>
+                    <filter name="group_date" string="Export Date"
+                            context="{'group_by': 'export_date'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_karibu_export" model="ir.actions.act_window">
+        <field name="name">Karibu Exports</field>
+        <field name="res_model">nt.karibu.export</field>
+        <field name="view_mode">list,form</field>
+        <field name="search_view_id" ref="karibu_export_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">No LPOs exported yet</p>
+            <p>Open a purchase order for Tanga Cement and use Export Karibu LPO.</p>
+        </field>
+    </record>
+
+    <!-- ============ Menus ============ -->
+    <menuitem id="menu_karibu_export"
+              name="Karibu Exports"
+              action="action_karibu_export"
+              parent="purchase.menu_procurement_management"
+              groups="purchase.group_purchase_user"
+              sequence="22"/>
+    <menuitem id="menu_karibu_product"
+              name="Karibu Cement Codes"
+              action="action_karibu_product"
+              parent="purchase.menu_purchase_config"
+              groups="purchase.group_purchase_manager"
+              sequence="50"/>
+    <menuitem id="menu_karibu_location"
+              name="Karibu Locations"
+              action="action_karibu_location"
+              parent="purchase.menu_purchase_config"
+              groups="purchase.group_purchase_manager"
+              sequence="51"/>
+</odoo>

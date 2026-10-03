@@ -9,6 +9,9 @@
                 <button name="action_open_incentive_wizard" type="object"
                         string="Create Incentive"
                         invisible="state != 'purchase'"/>
+                <button name="action_karibu_export" type="object"
+                        string="Export Karibu LPO"
+                        invisible="not nt_is_karibu or state == 'cancel'"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_incentive_orders" type="object"
@@ -16,6 +19,44 @@
                         invisible="incentive_count == 0">
                     <field name="incentive_count" widget="statinfo" string="Incentives"/>
                 </button>
+                <button name="action_view_karibu_exports" type="object"
+                        class="oe_stat_button" icon="fa-file-excel-o"
+                        invisible="nt_karibu_export_count == 0">
+                    <field name="nt_karibu_export_count" widget="statinfo" string="LPO Exports"/>
+                </button>
+            </xpath>
+            <xpath expr="//page[@name='products']" position="after">
+                <page string="Karibu LPO" name="nt_karibu" invisible="not nt_is_karibu">
+                    <group>
+                        <group>
+                            <field name="nt_is_karibu"/>
+                            <field name="nt_lpo_ref" placeholder="GPAL-12292"/>
+                            <field name="nt_lpo_date"/>
+                        </group>
+                        <group>
+                            <field name="nt_karibu_location_id" options="{'no_create': True}"/>
+                            <field name="nt_karibu_total_tons" widget="float" readonly="1"/>
+                        </group>
+                    </group>
+                    <field name="nt_karibu_line_ids">
+                        <list string="Trucks" editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="vehicle_id" options="{'no_create': True}"/>
+                            <field name="truck_no"/>
+                            <field name="trailer_no"/>
+                            <field name="driver_id" options="{'no_create': True}"/>
+                            <field name="license_no"/>
+                            <field name="karibu_product_id" options="{'no_create': True}"/>
+                            <field name="product_type" optional="show"/>
+                            <field name="qty_tons" sum="Total MT"/>
+                            <field name="transporter" optional="show"/>
+                        </list>
+                    </field>
+                    <div class="text-muted mt-2">
+                        One row per truck. Each becomes a line on the BulkUpload sheet
+                        and a line on the printed LPO.
+                    </div>
+                </page>
             </xpath>
             <xpath expr="//page[@name='products']" position="after">
                 <page string="Truck Details" name="nt_truck_details">
