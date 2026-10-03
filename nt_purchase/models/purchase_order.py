@@ -3,10 +3,15 @@ import io
 import re
 
 from odoo import _, api, fields, models
-from odoo.exceptions import UserError
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools import float_compare
 
 from odoo.addons.nt_stock.models.truck_mixin import TRUCK_FIELDS
+from odoo.addons.nt_purchase.models.karibu_export import EXPORT_STATES
 from odoo.addons.nt_purchase.tools.karibu_workbook import build_karibu_workbook
+
+# Tanga Cement's terms accept a +/-1% weighbridge tolerance.
+KARIBU_TONNAGE_TOLERANCE = 0.01
 
 
 class PurchaseOrder(models.Model):
@@ -38,6 +43,10 @@ class PurchaseOrder(models.Model):
     nt_karibu_export_ids = fields.One2many(
         'nt.karibu.export', 'order_id', string="Karibu Exports")
     nt_karibu_export_count = fields.Integer(compute='_compute_nt_karibu_export_count')
+    nt_karibu_state = fields.Selection(
+        EXPORT_STATES, string="Karibu Status",
+        compute='_compute_nt_karibu_state', store=True,
+        help="Status of the latest Karibu export of this order.")
 
     @api.depends('partner_id.nt_is_karibu_supplier')
     def _compute_nt_is_karibu(self):
@@ -54,12 +63,60 @@ class PurchaseOrder(models.Model):
         for order in self:
             order.nt_karibu_export_count = len(order.nt_karibu_export_ids)
 
+    @api.depends('nt_karibu_export_ids.state')
+    def _compute_nt_karibu_state(self):
+        for order in self:
+            latest = order.nt_karibu_export_ids.sorted(
+                lambda e: (e.create_date or fields.Datetime.now(), e.id), reverse=True)[:1]
+            order.nt_karibu_state = latest.state
+
+    @api.constrains('nt_lpo_ref', 'company_id', 'state')
+    def _check_nt_lpo_ref_unique(self):
+        for order in self.filtered(lambda o: o.nt_lpo_ref and o.state != 'cancel'):
+            duplicate = self.search([
+                ('id', '!=', order.id),
+                ('nt_lpo_ref', '=', order.nt_lpo_ref),
+                ('company_id', '=', order.company_id.id),
+                ('state', '!=', 'cancel'),
+            ], limit=1)
+            if duplicate:
+                raise ValidationError(_(
+                    "LPO reference %(ref)s is already used on %(order)s.",
+                    ref=order.nt_lpo_ref, order=duplicate.display_name))
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_karibu_exported(self):
+        exported = self.filtered('nt_karibu_export_ids')
+        if exported:
+            raise UserError(_(
+                "%(orders)s cannot be deleted: a Karibu LPO was exported from it "
+                "and the export history must be kept. Cancel the order instead.",
+                orders=", ".join(exported.mapped('display_name'))))
+
+    def _nt_karibu_ordered_tons(self):
+        """Cement tonnage on the order lines, or None when it cannot be
+        expressed in tons (for instance a unit with no weight reference)."""
+        self.ensure_one()
+        lines = self.order_line.filtered(lambda l: not l.display_type and l.product_id)
+        cement = lines.filtered(lambda l: l.product_id.product_tmpl_id.nt_karibu_product_id)
+        lines = cement or lines
+        ton = self.env.ref('uom.product_uom_ton', raise_if_not_found=False)
+        if not lines or not ton:
+            return None
+        total = 0.0
+        for line in lines:
+            uom = line.product_uom_id
+            if not uom or not uom._has_common_reference(ton):
+                return None
+            total += uom._compute_quantity(line.product_qty, ton, round=False)
+        return total
+
     def _nt_karibu_check(self):
         """Raise if anything the supplier's template requires is missing."""
         self.ensure_one()
         problems = []
-        if self.state == 'cancel':
-            problems.append(_("the order is cancelled"))
+        if self.state not in ('purchase', 'done'):
+            problems.append(_("the order is not confirmed"))
         if not self.nt_lpo_ref:
             problems.append(_("the LPO reference is empty"))
         if not self.nt_karibu_location_id:
@@ -75,6 +132,14 @@ class PurchaseOrder(models.Model):
                 problems.append(
                     _("truck %(n)s: driver %(d)s has no licence number",
                       n=index, d=line.driver_id.display_name or ""))
+        ordered = self._nt_karibu_ordered_tons()
+        trucks = self.nt_karibu_total_tons
+        if ordered is not None and self.nt_karibu_line_ids and float_compare(
+                abs(trucks - ordered), ordered * KARIBU_TONNAGE_TOLERANCE,
+                precision_digits=3) > 0:
+            problems.append(_(
+                "the trucks carry %(trucks)s MT but the order is for %(ordered)s MT",
+                trucks=round(trucks, 3), ordered=round(ordered, 3)))
         if problems:
             raise UserError(_(
                 "This order cannot be exported yet:\n\n- %s",
@@ -123,6 +188,7 @@ class PurchaseOrder(models.Model):
                 'trailer': line.trailer_no or "",
                 'qty': line.qty_tons,
                 'product_code': line.karibu_product_id.code,
+                'product_name': line.karibu_product_id.description or "",
                 'product_type': line.product_type or "",
                 'transporter': line.transporter or "",
             } for line in self.nt_karibu_line_ids],
@@ -159,6 +225,8 @@ class PurchaseOrder(models.Model):
         stream = io.BytesIO()
         workbook.save(stream)
 
+        self.nt_karibu_export_ids.filtered(
+            lambda e: e.state == 'exported').state = 'superseded'
         export = self.env['nt.karibu.export'].create({
             'name': self.nt_lpo_ref,
             'order_id': self.id,

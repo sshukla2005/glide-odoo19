@@ -1,6 +1,6 @@
 {
     'name': 'NT Purchase',
-    'version': '19.0.1.3.0',
+    'version': '19.0.1.4.0',
     'category': 'Inventory/Purchase',
     'summary': 'NorthStar purchase customisations: incentives, truck details and Karibu Portal LPO export',
     'author': 'NorthStar Technologies International Ltd.',

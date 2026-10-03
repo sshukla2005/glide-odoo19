@@ -14,27 +14,34 @@ class NtKaribuTruckLine(models.Model):
     company_id = fields.Many2one(related='order_id.company_id', store=True)
     sequence = fields.Integer(default=10)
 
+    # Each autofilled field has its own compute: fields sharing one compute
+    # are protected together, so passing one of them on create would leave
+    # the others empty. precompute fills them before the INSERT, which the
+    # NOT NULL on driver_id needs outside the form view (imports, scripts).
     vehicle_id = fields.Many2one(
         'fleet.vehicle', string="Truck", required=True,
         help="Truck collecting this load.")
     truck_no = fields.Char(
-        string="Truck Reg.", compute='_compute_from_vehicle',
-        store=True, readonly=False)
+        string="Truck Reg.", compute='_compute_truck_no',
+        store=True, readonly=False, precompute=True, copy=True)
     trailer_no = fields.Char(
-        string="Trailer", compute='_compute_from_vehicle',
-        store=True, readonly=False)
+        string="Trailer", compute='_compute_trailer_no',
+        store=True, readonly=False, precompute=True, copy=True)
     driver_id = fields.Many2one(
-        'res.partner', string="Driver", compute='_compute_from_vehicle',
-        store=True, readonly=False, required=True)
+        'res.partner', string="Driver", compute='_compute_driver_id',
+        store=True, readonly=False, precompute=True, copy=True, required=True)
     license_no = fields.Char(
         string="Licence No.", compute='_compute_license_no',
-        store=True, readonly=False)
+        store=True, readonly=False, precompute=True, copy=True)
 
     karibu_product_id = fields.Many2one(
-        'nt.karibu.product', string="Cement Code", required=True)
+        'nt.karibu.product', string="Cement Code", required=True,
+        compute='_compute_karibu_product_id',
+        store=True, readonly=False, precompute=True, copy=True,
+        help="Defaults to the Karibu code of the cement on the order lines.")
     product_type = fields.Char(
         string="Product Type", compute='_compute_product_type',
-        store=True, readonly=False)
+        store=True, readonly=False, precompute=True, copy=True)
     qty_tons = fields.Float(string="Qty (MT)", required=True, default=31.0)
     transporter = fields.Char(
         default=lambda self: self.env.company.name,
@@ -42,25 +49,39 @@ class NtKaribuTruckLine(models.Model):
              "loads, otherwise the hired transporter.")
 
     @api.depends('vehicle_id')
-    def _compute_from_vehicle(self):
+    def _compute_truck_no(self):
         for line in self:
-            vehicle = line.vehicle_id
-            line.truck_no = vehicle.license_plate or line.truck_no
-            line.trailer_no = vehicle.nt_trailer_no or line.trailer_no
-            if vehicle.driver_id:
-                line.driver_id = vehicle.driver_id
+            line.truck_no = line.vehicle_id.license_plate or line.truck_no
+
+    @api.depends('vehicle_id')
+    def _compute_trailer_no(self):
+        for line in self:
+            line.trailer_no = line.vehicle_id.nt_trailer_no or line.trailer_no
+
+    @api.depends('vehicle_id')
+    def _compute_driver_id(self):
+        for line in self:
+            line.driver_id = line.vehicle_id.driver_id or line.driver_id
 
     @api.depends('driver_id')
     def _compute_license_no(self):
         for line in self:
-            if line.driver_id.nt_license_no:
-                line.license_no = line.driver_id.nt_license_no
+            line.license_no = line.driver_id.nt_license_no or line.license_no
+
+    @api.depends('order_id')
+    def _compute_karibu_product_id(self):
+        for line in self:
+            if line.karibu_product_id:
+                line.karibu_product_id = line.karibu_product_id
+                continue
+            codes = line.order_id.order_line.product_id.product_tmpl_id.nt_karibu_product_id
+            # Only guess when the order carries a single cement code.
+            line.karibu_product_id = codes if len(codes) == 1 else False
 
     @api.depends('karibu_product_id')
     def _compute_product_type(self):
         for line in self:
-            if line.karibu_product_id:
-                line.product_type = line.karibu_product_id.short_type
+            line.product_type = line.karibu_product_id.short_type or line.product_type
 
     @api.constrains('qty_tons')
     def _check_qty_tons(self):

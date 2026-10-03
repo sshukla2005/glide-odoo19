@@ -50,7 +50,7 @@ def build_karibu_workbook(lpo, products):
         'supplier': {'name','street','street2','city','phone','email'},
         'signatory',
         'lines': [{'driver','license','truck','trailer','qty','product_code',
-                   'product_type','transporter'}, ...],
+                   'product_name','product_type','transporter'}, ...],
     }
     products: [{'code','description','short_type'}, ...] - the full TCPLC list
     """
@@ -100,8 +100,8 @@ def _build_bulk_upload(wb, lpo):
     lines = lpo.get("lines", [])
     for index in range(BULK_FIRST_ROW, BULK_LAST_ROW + 1):
         ws.cell(row=index, column=1, value=index - BULK_FIRST_ROW + 1)
-        # Column C mirrors the client's formula: the description is looked up
-        # from the code the user picks in column D.
+        # Column C mirrors the client's formula for rows filled in by hand:
+        # the description is looked up from the code picked in column D.
         ws.cell(
             row=index,
             column=3,
@@ -113,6 +113,10 @@ def _build_bulk_upload(wb, lpo):
         if row > BULK_LAST_ROW:
             break
         ws.cell(row=row, column=2, value=lpo["reference"])
+        # Filled rows carry the description as a value: openpyxl cannot store
+        # a formula's result, so a parser reading the file without Excel
+        # recalculating it would see an empty Product column.
+        ws.cell(row=row, column=3, value=line.get("product_name") or None)
         ws.cell(row=row, column=4, value=line["product_code"])
         ws.cell(row=row, column=5, value=line["truck"])
         ws.cell(row=row, column=6, value=_licence(line["license"]))

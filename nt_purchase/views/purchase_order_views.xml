@@ -11,7 +11,7 @@
                         invisible="state != 'purchase'"/>
                 <button name="action_karibu_export" type="object"
                         string="Export Karibu LPO"
-                        invisible="not nt_is_karibu or state == 'cancel'"/>
+                        invisible="not nt_is_karibu or state not in ('purchase', 'done')"/>
             </xpath>
             <xpath expr="//div[@name='button_box']" position="inside">
                 <button name="action_view_incentive_orders" type="object"
@@ -36,6 +36,11 @@
                         <group>
                             <field name="nt_karibu_location_id" options="{'no_create': True}"/>
                             <field name="nt_karibu_total_tons" widget="float" readonly="1"/>
+                            <field name="nt_karibu_state" invisible="not nt_karibu_state"
+                                   widget="badge"
+                                   decoration-success="nt_karibu_state == 'confirmed'"
+                                   decoration-info="nt_karibu_state == 'uploaded'"
+                                   decoration-danger="nt_karibu_state == 'rejected'"/>
                         </group>
                     </group>
                     <field name="nt_karibu_line_ids">
