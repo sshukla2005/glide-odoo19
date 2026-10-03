@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Contacts: Karibu supplier flag and the driver's licence number -->
+    <record id="view_partner_form_nt_karibu" model="ir.ui.view">
+        <field name="name">res.partner.form.nt.karibu</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='purchase']" position="inside">
+                <field name="nt_is_karibu_supplier" invisible="not is_company"/>
+            </xpath>
+            <xpath expr="//group[@name='misc']/field[@name='ref']" position="after">
+                <field name="nt_license_no" invisible="is_company"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Fleet: default trailer coupled to the truck -->
+    <record id="fleet_vehicle_view_form_nt_karibu" model="ir.ui.view">
+        <field name="name">fleet.vehicle.form.nt.karibu</field>
+        <field name="model">fleet.vehicle</field>
+        <field name="inherit_id" ref="fleet.fleet_vehicle_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='driver_id']" position="after">
+                <field name="nt_trailer_no"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Company: TIN printed on the LPO letterhead -->
+    <record id="view_company_form_nt_karibu" model="ir.ui.view">
+        <field name="name">res.company.form.nt.karibu</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='vat']" position="after">
+                <field name="nt_tin"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Product: Tanga Cement's code for this product -->
+    <record id="product_template_form_nt_karibu" model="ir.ui.view">
+        <field name="name">product.template.form.nt.karibu</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='purchase']" position="inside">
+                <field name="nt_karibu_product_id" options="{'no_create': True}"
+                       groups="purchase.group_purchase_user"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

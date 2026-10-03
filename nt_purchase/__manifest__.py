@@ -15,6 +15,7 @@
         'wizard/incentive_import_wizard_views.xml',
         'views/incentive_order_views.xml',
         'views/karibu_views.xml',
+        'views/master_data_views.xml',
         'views/purchase_order_views.xml',
     ],
     'installable': True,
